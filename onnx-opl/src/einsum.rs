@@ -450,4 +450,16 @@ mod test {
         let out_shape = tvec![4];
         assert_eq!(op.output_shape(&in_shapes), out_shape);
     }
+    
+    #[test]
+    fn test_output_shape_unkown_dims() {
+        // Test "ntci,cij->ntcj"; the second input is missing the `n` and `t` dimensions. In this
+        // case, `n` is the batch size and `t` the time dimension (pulsed).
+        let op = EinSum { expr: "*i,*ij->*j".parse::<Expr>().unwrap() };  // need resolve_ellipsis that considers input shapes
+        let a = vec![1, 2, 3, 4];
+        let b = vec![1, 3, 4, 5];
+        let in_shapes = tvec![a.as_slice(), b.as_slice()];
+        let out_shape = tvec![1, 2, 3, 5];
+        assert_eq!(op.output_shape(&in_shapes), out_shape);  // This failes 
+    }
 }
