@@ -45,6 +45,16 @@ impl std::ops::Deref for TValue {
     }
 }
 
+impl std::ops::DerefMut for TValue {
+    type Target = Tensor;
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        match self {
+            Const(it) => it,
+            Var(it) => it,
+        }
+    }
+}
+
 impl std::borrow::Borrow<Tensor> for TValue {
     fn borrow(&self) -> &Tensor {
         self
